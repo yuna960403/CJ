@@ -1,0 +1,594 @@
+/* CJ Controlled Japanese 文法 */
+
+/**
+* トップの規則
+* 文はChunkの繰り返しとみなす
+*/
+
+Sentence = {
+    (Chunk / Ten / Error)* EOS
+    #S
+}
+
+//packrat = ''
+
+Chunk =
+    / Adword       // 接続詞,副詞,連体詞
+    / Measure      // 助数詞
+    / AdjectiveChunk  // 形容詞節
+    / VerbChunk    // 動詞節
+    / NounChunk0   // 優先名詞チャンク　「組み合わせ」を先にする
+    / NounChunk    // 名詞節, 形容動詞節
+
+VChunk =
+    / AdjectiveChunk
+    / VerbChunk
+
+// 辞書
+
+// 接続詞, 連体詞
+// 名詞があとに続くが、単独では名詞でも形容動詞でも解釈できない
+// 「こ」の 連体詞　「一部」の　名詞＋「の」
+
+ADWARD = @choice('cjdic/ADWORD.txt')
+
+// 名詞
+NOUN = @choice('cjdic/NOUN.txt')
+
+// 動詞
+VERB5KA = @choice('cjdic/VERB5KA.txt')
+VERB5SA = @choice('cjdic/VERB5SA.txt')
+VERB5TA = @choice('cjdic/VERB5TA.txt')
+VERB5NA = @choice('cjdic/VERB5NA.txt')
+VERB5MA = @choice('cjdic/VERB5MA.txt')
+VERB5RA = @choice('cjdic/VERB5RA.txt')
+VERB5WA = @choice('cjdic/VERB5WA.txt')
+VERB5GA = @choice('cjdic/VERB5GA.txt')
+VERB5BA = @choice('cjdic/VERB5BA.txt')
+
+VERB1   = @choice('cjdic/VERB1.txt')
+
+// 一文字の語幹はいれない
+VERB1C  = [見経得割出似みでい]
+
+
+// 接続詞
+
+Adword = { 
+    ADWARD / 'が'
+    #Ad 
+} _Noun?
+
+
+// 助数詞
+// Code に数量を表す語が続く
+
+Measure = {
+    UnitPrefix?
+    (Code / NumericNoun ) 
+    !NONUNIT Unit
+    UnitPostfix?
+    #Measure
+} _Noun?
+
+
+UnitPrefix = 
+    / { '約' / 'およそ' #Aprox }
+    / { 'もう' / 'さらに' / '更に' #More }
+    / { '高々'/ 'たかだか' / '多くとも' / '最大' #AtMost }
+    / { '少なくとも' / '最小' #AtLeast }
+
+NumericNoun = {
+    '複数' / [一二三毎数先今次]  // 複数回 毎回 今回
+    #Noun
+}
+
+// 単位
+// カタカナ (例. ドル、メートル)
+// もしくは、cjdic/UNIT 単位辞書に登録する
+
+Unit = {
+    @choice('cjdic/UNIT.txt') / KATA+
+    #Unit
+}
+
+NONUNIT = @choice('cjdic/NONUNIT.txt')
+
+UnitPostfix = 
+    / { '程' / 'ほど' #Aprox }
+    / { 'ごと' / '毎' / 'ずつ' #Each }
+    / { '以上' #Gte }
+    / { '以下' #Lte }
+    / { '未満' #Lt }
+
+// 接辞
+
+_Noun = !NOUN !ADWARD _Noun2
+_Noun2 = // もの
+    / BE _Be / _May
+    / {^ {'から' / 'より'} #From } _Noun?
+    / {^ {'まで'} #Until } _Noun?
+    / {^ {'へ'} #To } _NounOf?        // Aへの, Aへは
+    / {^ {'に'} (Against / About / _Let / By / Despite / _Noun)? #Object }     // Aにの~ , Aには~
+    / {^ {'と' 'か'?} #Object } (_Let / _NounOf)?    // Aとの~ , Aとは~
+    / {^ {'で'} #Object } (_Exist/_Noun)?    // Aでの~,
+    / {^ {'かぎり' / '限り'} #AsLong } _Noun? // その場かぎり
+    / {^ {'か' ('どうか'/'否か')} #Whether } _Noun? // 可能かどうか
+    / {^ {'か'} #OrElse } _Noun? // 可能か不可能か
+    / {^ {'のみ'/'だけ'/'ばかり'/'さえ'/'しか'} #Only } _Noun?   // 彼のみを
+    / {^ {'らし'} #Likely } _Adj   // 単語らしい
+    / {^ {'ごと'} #Each } _Noun?   // 単語ごと+で
+    / {^ {'など'} #Etc } _Noun?   // 単語など+で
+    / {^ {'なし'/'なさ'} #No } _Noun?   // 単語なし+の
+    / {^ {'そう'}  #Seem } _Noun?   // 正確そう
+    / {^ {'さ' ![せれ]} #Noun } _Noun? // 正確さ  洗練させる　洗練される
+    / {^ {'なら' 'ば'?} #If }  // 正確ならば
+    / {^ {'な'} ![いくか] #Adjective } ({^ {'の'} #ThingThat } !NOUN _Noun)? // 正確な
+    / {^ {'を'} #Object }
+    / {^ {'や'} #AndOr }
+    / {^ {'または'} #Or }
+    / _NounOf
+
+_NounOf = 
+    / {^ {('こそ' / [はがも])} #Subject }
+    / {^ {'の'} #ThingThat } !NOUN _Noun // Aのは Aの(もの)に
+    / {^ {'の'} !'み' #Of } _Like?  // 
+
+_Like = {^ 'よう' #Like } _Noun?
+
+_Let = // と + に
+    / {^ 'する' #Let } _Base?
+    / {^ 'して' 'ください'? #Let } _NounOf?
+    / {^ 'した' #Let } _Past?
+    / {^ 'し' #Let } (_CanMood / _Ten)
+
+_Base = // する+ した+
+    / _May 
+    / _Should
+    / {^ 'らし' #Sound } _Adj   // するらしい
+    / {^ {'のみ'/ 'だけ'} #OnlyThat } _Noun?
+    / {^ {'ため' / '為'} #Because } _Noun?
+    / {^ {'たび' / 'ごと'} #Whenever } _Noun? // 置換されるたびに
+    / {^ {'ので' / 'から'} #Because } 
+    / {^ {'かぎり' / '限り'} #AsLong } _Noun?
+    / {^ {'の'? 'か' ('どうか'/'否か')? }  #Whether } _Noun?
+    / {^ {'とき' / 'と' TEN / '時' / '場合' / '際' / 'ところ'}  #If } _Noun?
+    / {^ {'のなら' 'ば'?} #If }
+    / {^ {'とおり' / 'よう'} #As } _Noun?
+    / {^ {'と' 'か'?} #That } _Noun?
+    / {^ {'まで'} #Until } _Noun?
+    / {^ {'など'} #SuchThat } _Noun?
+    / {^ {'ほど'} #Case } _Noun?
+    / {^ {'まま'} #AsIs } _Noun?
+    / {^ {'には'} #That }
+    / {^ {'の'} #That } _Noun?
+
+_Past = // した
+    / {^ {'り'} #AndThen }
+    / {^ {'な'? 'ら' 'ば'?} #If } 
+    / _Base
+
+
+Against = // に + 
+    { '対する' / '対し' ('て' _NounOf? / 'た' _Past? )? #Against }
+
+About = // に + 
+    { 'ついて' _NounOf? / '関し' ('て' _NounOf? / 'た' _Past? )? #About }
+
+By = // に + 
+    { 'よる' / 'よっ' ('て' _NounOf? / 'た' )? / 'より' #About }
+
+Despite = // に + 
+    { ('かか'/'関') 'わらず' / '関係なく' #Despite }
+
+_May =
+    {^ 'かも' [知し] 'れ' ('ない' / 'ません' / _CanMood) #May }
+
+_Should = 
+    {^ ('べき' / 'べし' / 'はず' ) #Should } _Noun?
+
+BE = &[でだ]
+_Be = // すべき
+    / {^ {'で' ('すら' / 'さえ')} #Though }     // 首相ですら 
+    / {^ {'でな'} #IsNot} _Adj 
+    / {^ {('でしょう' / 'だろう')} #WouldBe } _Base?
+    / {^ {('でした' / 'だった')}  #Was } _Past?
+    / {^ {('です' / 'である' / 'だ' !'け')} #Is } _Base?
+
+Exist = { 'あ' _CanMoodA #Exist }
+_Exist = {^ 'あ' _CanMoodA #Exist }
+
+
+
+/*
+名詞 NounChunk 名詞らしいもので始まる
+優先度 0
+*/
+
+NounChunk0 = 
+    / VerbalNoun (_Noun / TEN / EOF)
+    / DictNoun _Noun?
+
+// 動詞から派生した複合名詞 
+// 呼び + 出し のようにふたつ組み合わせて名詞になる動詞
+
+VerbalNoun = {
+    VERBPAT VERBPAT 
+    #VNoun
+}
+
+// VERBPAT 「~ ます」に続く
+
+//VERBPAT = @choice('cjdic/NVERB.txt') 
+
+VERBPAT = 
+    / VERB5KA 'き'
+    / VERB5SA 'し'
+    / VERB5TA 'ち'
+    / VERB5NA 'に'
+    / VERB5MA 'み'
+    / VERB5RA 'り'
+    / VERB5WA 'い'
+    / VERB5GA 'ぎ'
+    / VERB5BA 'び'
+    / !'でき' VERB1      // 「行動でき」る
+
+DictNoun = {
+    NOUN
+    #Noun
+}
+
+example Sentence ハワイについて
+example Sentence ハワイに着いて
+
+/*
+名詞 Noun
+*/
+
+// CJルール 名詞
+// 平仮名が含まれない字句は外来語（名詞）とする
+//   ForeignNoun  例. クラス・メソッド
+// 平仮名が含まれる名詞は
+//  あらかじめ辞書に登録する  DictNone 
+//  「奥の細道」のようにカッコで書く  NewNoun
+
+NounChunk =
+    / Code _Noun?
+    / NewNoun (_NounVerb / _VerbRA5 / _Noun)?
+    / DefNoun (_NounVerb / _Noun)?
+    / PatNoun (_NounVerb / _VerbRA5 / _Noun)?
+
+DefNoun =
+    / '「' { @def(DEFNOUN, '定義語') #Phrase } '」'
+    / '『' { (!'』' .)* #Phrase } '』'
+    / '【' { (!'】' .)* #Phrase } '】'
+    / '〔' { (!'〕' .)* #Phrase } '〕'
+
+DEFNOUN = (!'」' .)+
+
+NewNoun = @in('定義語')
+
+// CJルール 名詞
+// 辞書に含まれていない名詞
+// 漢字、もしくはカタカタで始まる
+// ひらがなは _Noun が接尾に含まれる
+
+PatNoun = {
+    VERBPAT NONHIRA+ / NONHIRA (_Verb2 / NONHIRA+)?
+    //(VERBPAT / NONHIRA) (VERBPAT / NONHIRA)*
+    #PNoun
+}
+
+_Verb2 = VERBPAT ![たてまな] / NONHIRA _Verb2
+
+// VERBPAT 以外の名詞の接尾詞　FIXME
+//_Noun = !'らしい' @choice('cjdic/_Noun.txt')
+
+/*
+動詞の未然形活用
+未然形はほぼ確実に助動詞が繋がるため先読みで誤マッチを抑制している
+これで「止まる」の先頭文字列「止ま」が「止む」の未然形「止ま」にマッチしない
+*/
+
+VerbChunk = 
+    / Exist / Do / Come
+    / VerbKA5 _VerbKA5
+    / VerbSA5 _VerbSA5
+    / VerbTA5 _VerbTA5
+    / VerbNA5 _VerbNA5
+    / VerbMA5 _VerbMA5
+    / VerbRA5 _VerbRA5
+    / VerbWA5 _VerbWA5
+    / VerbGA5 _VerbGA5
+    / VerbBA5 _VerbBA5
+    / Verb1 _Verb1
+
+
+VerbKA5 = { VERB5KA &[か-こい] #VerbKA5 }
+VerbSA5 = { VERB5SA &[さ-そ] #VerbSA5 }
+VerbTA5 = { VERB5TA &[た-とっ] #VerbTA5 }
+VerbNA5 = { VERB5NA &[な-のん] #VerbNA5 }
+VerbMA5 = { VERB5MA &[ま-もん] #VerbMA5 }
+VerbRA5 = { VERB5RA &[ら-ろっ] #VerbRA5 }
+VerbWA5 = { VERB5WA &[わいうえおっ] #VerbWA5 }
+VerbGA5 = { VERB5GA &[が-ごい] #VerbGA5 }
+VerbBA5 = { VERB5BA &[ば-ぼん] #VerbBA5 }
+Verb1 = { VERB1 / VERB1C #Verb1 }
+
+_Adj = //な
+    / {^ {'ければ'} #If }
+    / {^ {'くな'} #Not } _Adj
+    / {^ {'くな'} #Become } _VerbRA5
+    / {^ {'く' } &[はも] #Noun } _Noun // 大きくはない、大きくはありません
+    / {^ {'くに'} #Adverb }
+    / {^ {'くても'} #EvenIf }
+    / {^ {'く' 'て'?} #And }
+    / {^ {'い'} #Base } ({^ 'で' #And} / _Base)?
+    / {^ {'かった'}  #Past } _Past?
+    / {^ {'さ'} #Noun } _Noun?
+
+_Polite =
+    / {^ {('ます' / 'ましょう')} #Base } _Base?
+    / {^ {'ません' 'でした'?} #Not } _Base?
+    / {^ {'ましたら'} #If }
+    / {^ {'ました'} #Past } _Past?
+    / {^ {'ましても'} #EvenIf }
+    / {^ {'まして'} #And }
+
+_CanMood = // でき+　　られ+
+    / &'ま' _Polite
+    / {^ {'な'} #Not } _Adj
+    / {^ {'る'} #Base } _Base?
+    / {^ {'た'} #Past } _Past?
+    / {^ {'ず' #Not} #Noun } _Noun?
+    / {^ {'れば'} #If }
+    / {^ {'てから'} #After }
+    / {^ {'ても'} #EvenIf }
+    / {^ 'て'  #And } _TryMood?
+
+MOOD1 = [まなるたれてず]
+
+_CanMoodA = // あ+る
+    / 'り' &'ま' _Polite
+    / {^ 'る' #Base } _Base?
+    / {^ 'った' #Past } _Past?
+    / {^ 'れば' #If }
+    / {^ 'ってから' #After }
+    / {^ 'っても' #EvenIf }
+    / {^ 'って' #And }
+
+// 補助動詞
+_TryMood = !NOUN !ADWORD _TryMoodImpl
+_TryMoodImpl = 
+    / {^ 'み' _CanMood #TryTo }  // 笑ってみる
+    / {^ 'い' #Going } _VerbKA5
+    / {^ 'い' _CanMood #Now }    // 笑っている, 増加していく
+    / _Exist                 // 笑ってある 
+    / Come                  // 笑ってくる
+
+
+_VerbA = // 書か+ない   探さ+ない
+    / {^ {'な'} #Not } _Adj
+    / {^ {'ず' #Not} #Noun } _Noun?
+    / {^ {'さ'? 'せ' 'られ'?} #Make } _CanMood
+    / {^ {'れ'} &MOOD1 #Been } _CanMood // これる vs. これは
+
+_VerbIX = // 書い+て   探し+て　
+    / {^ {'た'} #WantTo } _Adj   // 特例. 記録したい
+    / {^ {'た'} #Past } _Past?
+    / {^ {'てから'} #After } 
+    / {^ {'ても'} #EvenIf }
+    / {^ {'て'} &[は] #Noun } _Noun
+    / {^ {'て'} 'ください'? #And } _TryMood?
+
+_VerbIXD = // 遊んだ   遊んで
+    / {^ {'だ'} #Past } _Past?
+    / {^ {'でから'} #After }
+    / {^ {'でも'} #EvenIf }
+    / {^ {'で'} &[は] #Noun } _Noun
+    / {^ {'で'}  #And } _TryMood?
+
+_VerbI = // 書き+つつ  探し+つつ　
+    / &'ま' _Polite
+    / {^ {'た'} #WantTo } _Adj   // 書きたい
+    / {^ {('やす' / 'よ' )} #EasyTo } _Adj  // 書きやすい
+    / {^ {('にく' / 'がた' / 'づら')} #HardTo } _Adj //書きがたい
+    / {^ {'がち'}  #_Likely } _Noun? //休みがちだ
+    / {^ {('つつ' / 'ながら')} #While }
+
+_Verb = 
+    / (_Noun / TEN / EOF) {^ #Noun }   // 書出し
+    / {^ !MOOD1 #And }
+
+_VerbU = // 書く　探す
+    / _Base?
+
+_VerbE = // 書け+ば  探せ+ば
+    / {^ 'ば' #If }
+    / {^ #AbleTo} _Verb1
+
+_VerbO = // 書こ+う　探そ+う
+    / {^ 'う' _Base? #Will }
+
+// カ行変格活用動詞
+Come = 
+    / { 'こ' #Come } _VerbA
+    / { 'き'  #Come } _VerbIX
+    / { 'くる' #Come } _Base?
+    / { 'くれ' #Come } {^ 'ば' #If}
+
+Do = // する
+    / { 'する' #Do } _VerbU 
+    / { 'す' #Do } ('れ' _VerbE) / _Should 
+    / { 'し' #Do } (_VerbA / 'よ' _VerbO / _VerbIX / _VerbI ) 
+    / { 'され' #Been } _CanMood 
+    / { 'でき' #Can } _CanMood
+
+_NounVerb = &[すずしじさせで] !NOUN _NounVerb2
+
+_NounVerb2 = // 例. 行動する 論じる
+    / {^ {[すず] 'る'} #Do } _VerbU
+    / {^ {[すず]} #Do } ('れ' _VerbE / _Should) 
+    / {^ {[しじ]} #Do } (_VerbA / 'よ' _VerbO / _VerbIX / _VerbI / _Verb )
+    / {^ {'され'} #Been } _CanMood
+    / {^ {'させ'} #Make } _CanMood
+    / {^ {'せず' #Not} #Noun } _Noun?
+    / {^ {'でき'} #Can } _CanMood
+
+
+_VerbKA5 = // 書
+    / {^ {'か'} #Verb } _VerbA
+    / {^ {'き'} #Verb } (_VerbI / _Verb )
+    / {^ {'い'} #Verb } _VerbIX
+    / {^ {'く'} #Verb } _VerbU
+    / {^ {'け'} #Verb } _VerbE
+    / {^ {'こ'} #Verb } _VerbO
+
+_VerbSA5 = // 探 出
+    / {^ {'さ'} #Verb } _VerbA  // ない
+    / {^ {'し'} #Verb } _VerbIX // て
+    / {^ {'し'} #Verb } (_VerbI / _Verb )  // ながら
+    / {^ {'す' 'る'?} #Verb } _VerbU  // 達すると
+    / {^ {'せ'} #Verb } _VerbE  // ば
+    / {^ {'そ'} #Verb } _VerbO  // う
+
+
+_VerbTA5 = // 勝
+    / {^ {'た'} #Verb } _VerbA  // ない
+    / {^ {'ち'} #Verb } (_VerbI / _Verb )  // ながら
+    / {^ {'っ'} #Verb } _VerbIX // て
+    / {^ {'つ'} #Verb } _VerbU  // 
+    / {^ {'て'} #Verb } _VerbE  // ば
+    / {^ {'と'} #Verb } _VerbO  // う
+
+_VerbNA5 = // 死
+    / {^ {'な'} #Verb } _VerbA  // ない
+    / {^ {'に'} #Verb } (_VerbI / _Verb )  // ながら
+    / {^ {'ん'} #Verb } _VerbIXD // て
+    / {^ {'ぬ'} #Verb } _VerbU  // 
+    / {^ {'ね'} #Verb } _VerbE  // ば
+    / {^ {'の'} #Verb } _VerbO  // う
+
+_VerbMA5 = // 読
+    / {^ {'ま'} #Verb } _VerbA  // ない
+    / {^ {'み'} #Verb } (_VerbI / _Verb )  // ながら
+    / {^ {'ん'} #Verb } _VerbIXD // て
+    / {^ {'む'} #Verb } _VerbU  // 
+    / {^ {'め'} #Verb } _VerbE  // ば
+    / {^ {'も'} #Verb } _VerbO  // う
+
+_VerbRA5 = // 切
+    / {^ {'ら'} #Verb } _VerbA  // ない
+    / {^ {'り'} #Verb } (_VerbI / _Verb )  // ながら
+    / {^ {'っ'} #Verb } _VerbIX // て
+    / {^ {'る'} #Verb } _VerbU  // 
+    / {^ {'れ'} #Verb } _VerbE  // ば
+    / {^ {'ろ'} #Verb } _VerbO  // う
+
+_VerbWA5 = // 笑
+    / {^ {'わ'} #Verb } _VerbA  // ない
+    / {^ {'い'} #Verb } (_VerbI / _Verb )  // ながら
+    / {^ {'っ'} #Verb } _VerbIX // て
+    / {^ {'う'} #Verb } _VerbU  // 
+    / {^ {'え'} #Verb } _VerbE  // ば
+    / {^ {'お'} #Verb } _VerbO  // う
+
+_VerbGA5 = // 防
+    / {^ {'が'} #Verb } _VerbA  // ない
+    / {^ {'ぎ'} #Verb } (_VerbI / _Verb )  // ながら
+    / {^ {'い'} #Verb } _VerbIXD // て
+    / {^ {'ぐ'} #Verb } _VerbU  // 
+    / {^ {'げ'} #Verb } _VerbE  // ば
+    / {^ {'ご'} #Verb } _VerbO  // う
+
+_VerbBA5 = // 遊
+    / {^ {'ば'} #Verb } _VerbA  // ない
+    / {^ {'び'} #Verb } (_VerbI / _Verb )  // ながら
+    / {^ {'ん'} #Verb } _VerbIXD // て
+    / {^ {'ぶ'} #Verb } _VerbU  // 
+    / {^ {'べ'} #Verb } _VerbE  // ば
+    / {^ {'ぼ'} #Verb } _VerbO  // う
+
+// 「それる」は除外
+
+_Verb1 = // 着る 述べ
+    / {^ {'る'} #Verb } _VerbU  // 
+    / {^ {'れ'} #Verb } _VerbE  // ば
+    / {^ {'られ'} #Been } _CanMood  // 述べられています
+    / {^ {'よ'} #Verb } _VerbO  // う    
+    / _VerbA  // ない
+    / _VerbIX // て
+    / _VerbI  // 視野が視るにマッチするのを防ぐ
+    / _Verb
+    / {^ #And} VerbChunk
+
+_VerbHIRA1 = // 述べ 加え
+    / {^ {'る'} #Verb } _VerbU  // 
+    / {^ {'れ'} #Verb } _VerbE  // ば
+    / {^ {'られ'} #Been } _CanMood  // 述べられています
+    / {^ {'よ'} #Verb } _VerbO  // う    
+    / _VerbA  // ない
+    / _VerbIX // て
+    / _VerbI  // 視野が視るにマッチするのを防ぐ
+
+
+/* 形容詞 */
+
+AdjectiveChunk = 
+    Adjective _Adjective
+
+// 形容詞: 美し
+
+Adjective = { 
+    @choice('cjdic/ADJ.txt') &ADJ_CHECK 
+    #Adjective 
+}
+
+ADJ = @choice('cjdic/ADJ.txt') &ADJ_CHECK
+ADJ_CHECK = 'そう' / '過ぎ' / 'すぎ' / [さかくけい]
+
+_Adjective =
+    / {^ {'過ぎ' / 'すぎ'} #Too } _VerbHIRA1?
+    / _Adj 
+    / {^ {'さ' !'れ'} #Noun } _Noun?
+    / {^ {'そう'} #Like } ({^ {'ならば'} #If } / _Noun)?
+
+
+/* コードは名詞扱い */
+
+Code = {
+    [A-Za-z0-9.(){}, +\-*/%\\]+
+    #Code
+}
+
+// CJ.TPEG マッチしない名詞はエラーとしてスキップする
+
+Error = {
+    HIRA+
+    #err
+}
+
+/* 文字コード */
+
+Ten = { TEN #Ten }
+_Ten = {^ TEN? #Ten }
+
+SPC = [ ]
+EOF = !.
+EOS = [。．.\n]? EOF
+TEN = [、，,\n]
+KANJI = [㐀-䶵一-龠々〇〻ーご]
+KATA = [ァ-ヶー・]
+HIRA = [ぁ-ん]
+NONHIRA = (!HIRA !TEN .)
+ALPHA = [a-zA-Zａ-ｚＡ-Ｚ]
+NUM = [\.,0-9０-９一二三四五六七八九十百千万億兆京垓秭穰溝澗正載極]
+SYMBOL = [^＾~〜\-ー_＿!！?？#＃$＄&＆=＝@＠*＊+＋/・]
+
+
+// 多少異なっている
+// 以下のような記述形式をとります
+// 記述では
+// 山田孝雄は、係助詞が陳述に影響を及ぼすとしている
+// 一分野か　一分、野球する
+// 自動車産業、宇宙産業などで参考にしている
