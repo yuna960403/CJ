@@ -22,13 +22,13 @@ Group = {
 Chunk =
     / Adword       // 接続詞,副詞,連体詞
     / Measure      // 助数詞
-    / AdjectiveChunk  // 形容詞節
+    / Adjective    // 形容詞節
     / VerbChunk    // 動詞節
     / NounChunk    // 名詞節, 形容動詞節
 
 
 VChunk =
-    / AdjectiveChunk
+    / Adjective
     / VerbChunk
 
 // 辞書
@@ -115,7 +115,6 @@ UnitPostfix =
     / { '以下' #Lte }
     / { '未満' #Lt }
 
-
 // 名詞
 // 平仮名が含まれない字句は外来語（名詞）とする
 //   ForeignNoun  例. クラス・メソッド
@@ -161,7 +160,7 @@ PatNoun = {
     / NONHIRA ( HIRAPAT / NONHIRA+)?　
     / 'お' PATVERB
     #PNoun
-}
+} (&'ま' {^ #Verb } _Polite )?    // 必要あり+ません
 
 PATVERB = 
     / VERB5KA 'き'
@@ -183,7 +182,7 @@ EVEN = 'さえ' / 'すら'
 
 // 接辞
 
-_Noun = NOT_HIRA _NounImpl
+_Noun = TEN? NOT_HIRA _NounImpl
 _NounImpl = // もの
     / &[でだ] _NounDE 
     / &'に'   _NounNI
@@ -207,8 +206,7 @@ _NounImpl = // もの
 
 _NounOf = 
     / {^ {('こそ' / [はがも])} #Subject }
-    / {^ {'の'} (NounChunk / Measure) #Of } // Aのは Aの(もの)に
-    / {^ {'の' 'よう'} #Like} _Noun?
+    / {^ {'の' NOT_HIRA 'よう'} #Like} _Noun?
     / {^ {'の'} #OfThing } _Noun // Aのは Aの(もの)に
     / {^ {'の'} #Of } 
 
@@ -222,7 +220,7 @@ _NounNA =
     / _BaseNA
     / {^ 'な' #Become} _VerbRA5
     / {^ {'な' &[しさ] NOT_HIRA [しさ] } #No } _Noun?   // 単語なし+の
-    / {^ {'な'} ![いくか] #Adjective } ({^ {'の'} #ThingThat } !NOUN _Noun)? // 正確な
+    / {^ {'な'} ![いくか] #Adjective } _Base? // 正確な
 
 
 _NounDE =
@@ -233,7 +231,7 @@ _NounDE =
     / { {'で' NOT_HIRA ('ある' / 'す')} #Is　} _Base?
     / { 'でき' #Can　} _CanMood
     / { {'だ' } !'け' #Is } _Base?
-    / {^ {'で'} #Object } (_Exist/ VerbChunk /_Noun)?    // Aでの~,
+    / {^ {'で'} #Object } (_Exist/ Adword / VerbChunk /_Noun)?    // Aでの~,
 
 _NounNI = 
     / {^ 'について' #About } _Noun?
@@ -260,9 +258,6 @@ _NounTO =
     / {^ 'と' NOT_HIRA 'な' #Become } _VerbRA5
     / {^ {'と' 'ともに'? } ( NOT_HIRA 'か')? #With } _Noun?
 
-
-
-
 _Base = TEN? _BaseImpl
 _BaseImpl = // する+ した+
     / _May 
@@ -276,7 +271,7 @@ _BaseImpl = // する+ した+
     / {^ {'のですが' / 'のだが'} #Though } _Noun? // から
     / {^ {'ので'} #Because } _Noun? // から
     / {^ {'かぎり' / '限り'} #AsLong } _Noun?
-    / {^ {'の'? 'か' ('どうか'/'否か')? }  #Whether } _Noun?
+    / {^ {'の'? &'か' NOT_HIRA 'か' ('どうか'/'否か')? }  #Whether } _Noun?
     / {^ {'とき' / 'と' TEN / '時' / '場合' / '際' / 'ところ'} !_Noun  #If }
     / {^ {'とき' / '時' / '場合' / '際' / 'ところ'} #Case } _Noun?
     / {^ {'のなら' 'ば'?} #If }
@@ -289,7 +284,8 @@ _BaseImpl = // する+ した+
     / {^ {'の'} #That } _Noun?
 
 _Past = // した
-    / {^ {'り'} (NOT_HIRA 'も')? #AndThen }
+    / {^ {'り'} #Noun } _Noun
+    / {^ {'り'} #Then }
     / {^ {'な'? 'ら' 'ば'?} #If } 
     / _Base
 
@@ -300,13 +296,6 @@ _May =
 _Should = 
     {^ ('べき' / 'べし' / 'はず' ) #Should } _Noun?
 
-BE = &[でだ]
-_Be = // すべき
-    / {^ {'で' ('すら' / 'さえ')} #Though }     // 首相ですら 
-    / {^ {'でな'} #IsNot} _MoodNA 
-    / {^ {('でしょう' / 'だろう')} #WouldBe } _Base?
-    / {^ {('でした' / 'だった')}  #Was } _Past?
-    / {^ {('です' / 'である' / 'だ' !'け')} #Is } _Base?
 
 Exist = { 'あ' _MoodA #Exist }
 _Exist = {^ 'あ' _MoodA #Exist }
@@ -341,6 +330,7 @@ _MoodNA = //な
     / {^ {'ければ'} #If }
     / {^ {'くな'} #Not } _MoodNA
     / {^ {'くな'} #Become } _VerbRA5
+    / {^ {'くて'} #Noun } _Noun // なくてはいけません
     / {^ {'く' } &[はも] #Noun } _Noun // 大きくはない、大きくはありません
     / {^ {'くに'} #Adverb }
     / {^ {'くても'} #EvenIf }
@@ -401,14 +391,14 @@ _VerbIX = // 書い+て   探し+て　
     / {^ {'た'} #Past } _Past?
     / {^ {'てから'} #After } _Noun?
     / {^ {'て' (&'も' NOT_HIRA .)} #EvenIf }
-    / {^ {'て'} &[は]#Noun } _Noun
+    / {^ {'て'} #Noun } _Noun
     / {^ {'て'} IGNORED? #And } _TryMood?
 
 _VerbIXD = // 遊んだ   遊んで
     / {^ {'だ'} #Past } _Past?
     / {^ {'でから'} #After } _Noun?
     / {^ {'で' (&'も' NOT_HIRA .)} #EvenIf }
-    / {^ {'で'} &[は] #Noun } _Noun
+    / {^ {'で'} #Noun } _Noun
     / {^ {'で'} IGNORED? #And } _TryMood?
 
 _VerbI = // 書き+つつ  探し+つつ　
@@ -421,8 +411,8 @@ _VerbI = // 書き+つつ  探し+つつ　
     / {^ {('つつ' / 'ながら')} #While }
 
 _Verb = 
+    / {^ #Noun } ( _Noun / TEN / EOF) // 書出し
     / {^ (VerbChunk / NounChunk ) #And } 
-    / ( _Noun / TEN / EOF) {^ #Noun }   // 書出し
     / Chunk?
 
 _VerbU = // 書く　探す
@@ -439,7 +429,7 @@ _VerbO = // 書こ+う　探そ+う
 Come = 
     / { 'こ' &'れ' #Come } {^ {'れ'} &MOOD1 #Been } _CanMood 
     / { 'こ' !'れ' #Come } _VerbA // これる vs. これは
-    / { 'き'  #Come } _VerbIX
+    / { 'き'  #Come } (_VerbIX / _VerbI)
     / { 'くる' #Come } _Base?
     / { 'くれ' #Come } {^ 'ば' #If}
 
@@ -544,9 +534,8 @@ _Verb1 = // 着る 述べ
     / {^ {'よ'} #Verb } _VerbO  // う    
     / _VerbA  // ない
     / _VerbIX // て
-    / _VerbI  // 視野が視るにマッチするのを防ぐ
+    / _VerbI
     / _Verb
-    / {^ #And} VerbChunk
 
 _VerbHIRA1 = // 述べ 加え
     / {^ {'る'} #Verb } _VerbU  // 
@@ -555,30 +544,33 @@ _VerbHIRA1 = // 述べ 加え
     / {^ {'よ'} #Verb } _VerbO  // う    
     / _VerbA  // ない
     / _VerbIX // て
-    / _VerbI  // 視野が視るにマッチするのを防ぐ
+    / _VerbI
 
 
 /* 形容詞 */
 
-AdjectiveChunk = 
-    Adjective _Adjective
+Adjective = 
+    / DictAdj _Adjective
+    / (GoodAdj / Not ) !'め' _Adjective
 
-// 形容詞: 美し
+// 形容詞: 美し 大き
 
-Adjective = { 
+DictAdj = { 
     ADJ
     #Adjective 
 }
+
+GoodAdj = { 'よ' #Good }
+Not = { 'な' #Not }
 
 ADJ_CHECK = 'そう' / '過ぎ' / 'すぎ' / [さかくけいめ]
 
 _Adjective =
     / {^ {'過ぎ' / 'すぎ'} #Too } _VerbHIRA1?
-    / {^ {'さ' !'れ'} #Noun } _Noun?
-    / {^ {'そう'} #Like } ({^ {'ならば'} #If } / _Noun)?
+    / {^ {'さ' !'れ' } #Noun } _Noun?
+    / {^ {'そう'} #Like } _Noun? 
     / {^ {'め'} #More } _Verb1
     / _MoodNA 
-
 
 /* コードは名詞扱い */
 
