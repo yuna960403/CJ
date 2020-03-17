@@ -6,7 +6,7 @@
 */
 
 Sentence = {
-    (Chunk IGNORED? / { TEN #Ten} / Symbol / Error )* EOS
+    (Chunk IGNORED? / Error )* EOS
     #Sentense
 }
 
@@ -17,11 +17,13 @@ Chunk =
     / Measure      // 助数詞
     / Adjective    // 形容詞節
     / VerbChunk    // 動詞節
-    / Group        // 括弧付き
     / NounChunk    // 名詞節, 形容動詞節
     / Adword2      // 2文字以下のひらがな
     / VerbC        // 1文字の動詞
     / PatNounC     // 1文字の名詞
+    / Group        // 括弧付き
+    / Symbol
+    / {TEN #Ten }
 
 // Group
 
@@ -44,6 +46,8 @@ NOUN = @choice('cjdic/NOUN.txt')
 
 // 形容詞
 ADJ = @choice('cjdic/ADJ.txt') &ADJ_CHECK
+ADJC = [黒高青難長鋭鈍重醜酸酷遠遍遅速近辛軽赤賢貴豪角薄蒼著荒苦若良臭腥脆聰聡羨繁緩細紅粘粗篤穢稚硬短眩眠白痛痒疎異畏甘狭狡熱煩煙無濃潔温渋清深淡浅洽汚永暗暑普易明早旨旧敏拙懶懈憎憂惨悪恥恐怪怖快強弱弛広幽幼少尊寒安好太多堆堅固善吝古厚凄円儚偉佳低乏丸イ] &ADJ_CHECK
+HIRA_ADJC = [よぽなすこくえうい] &ADJ_CHECK
 
 // 動詞
 VERB5KA = @choice('cjdic/VERB5KA.txt')
@@ -619,13 +623,13 @@ _Verb1 = // 過ぎ　述べ　視　でき
 /* 形容詞 */
 
 Adjective = 
-    / DictAdj _Adjective
     / (GoodAdj / Not ) !'め' _Adjective
+    / DictAdj _Adjective
 
 // 形容詞: 美し 大き
 
 DictAdj = { 
-    ADJ
+    ADJ / ADJC / HIRA_ADJC
     #Adjective 
 }
 
