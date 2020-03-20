@@ -22,7 +22,7 @@ Chunk =
     / AdjectiveH1  // 一文字の形容詞
     / VerbC        // 1文字の動詞
     / ShortNoun    // 2文字以下のひらがな名詞
-    / PatNounC     // 1文字の名詞
+    / Character    // 1文字の漢字
     / Group        // 括弧付き
     / Ten
     / Symbol
@@ -67,26 +67,30 @@ VERB1w   = @choice('cjdic/VERB1.txt', 'CJDIC/VERB1.txt') !'ば'
 // 使えば 
 
 //動詞(一文字)
-VERB1c  = [鋳診観視見経簸着看獲煮流歴恐得干居射寝割似出ゐ] CK_VERB1  //
+VERB1c  = [鋳診観視見経簸着看獲煮流歴恐得干居射寝割似出ゐ] CK_VERB1 !'し'  //
 HVERB1c  = [れみへひねにでてせきえうい] CK_VERB1
 
-VERB5KAc = [麾鳴驚飽頷頂響靡除附開閃鋤釈逝透退轢轟輝躓跪赴貫説誘訊解覗裂裁衝蠢蠕蒔葺若舂舁背肯聴聞耀置繙続結索築突穿空磨碾碎破砕研瞬着眩省発疼画牽焼焚点炊灼漉溶湧渇涌浮泣沸歩欺欠梳書曵曳暴明於斎敷敲放播撞撒搗描掻措掃捲捌挽拱拭招拓抱抜抄扱戴戦懐惹急従往弾引布巻履届就導妬如好塞堰基囁噴嘶嘯嘆喚啼哭咳咲呻呟吹向吐叩厭卷動効劈割剥利働傾俯佩付乾] CK_VERB5KA
-HVERB5KAc = [わゆやめむまふひぬなどづつだたせすさこきかおういあ] CK_VERB5KA // のとてはしで
-VERB5SAc = [齎黙騙験馴顕題鞣面零離隠際降附関閉鎖醸醒醂配還遺遷適達過逸通透逃返辞躱足越超起赦賺賭質費貸貶議諭課誑話試評証訳許記託解覚覆要表蒸著落萌荒興致臥腐脱脅肥聞耕翻翳罰縅約糾糺窶穢移称秘科祝示直発癒略画申産現犯片燻燃熾熱熨熟為点灯濾濁潰潤漉湿渡減済涙消浸流注治没決汚比毀殺残死正止標果来期服有更曝暮暈晒映施敵放擬擁撮撫推接探排捺捜挿指押托戻成慣愛思志徹復律廻延座干帰差崩属屈尽射対寫察宿害孵娶威奏失外壊増塾堕坐均在圧回囃嚇喫唆呈吊合召反卸即印博化剥則刺制利出処冷冠写冒兆催倒促侵余伸会伏任仮付介交乾乱下] CK_VERB5SA
-HVERB5SAc = [よもめむまほへぶふひなだたじしざさこけぎかお]　CK_VERB5SA // 除外: の
-VERB5TAc = [過起託討裁落育絶経立穿発激滾満毀断放擲撃持打截待建峙射勝分克充保佇伐] CK_VERB5TA
-HVERB5TAc = [もみまぶたかう] CK_VERB5TA
-VERB5NAc = [死往] CK_VERB5NA
+VERB5KAc = [行麾鳴驚飽頷頂響靡除附開閃鋤釈逝透退轢轟輝躓跪赴貫説誘訊解覗裂裁衝蠢蠕蒔葺若舂舁背肯聴聞耀置繙続結索築突穿空磨碾碎破砕研瞬着眩省発疼画牽焼焚点炊灼漉溶湧渇涌浮泣沸歩欺欠梳書曵曳暴明於斎敷敲放播撞撒搗描掻措掃捲捌挽拱拭招拓抱抜抄扱戴戦懐惹急従往弾引布巻履届就導妬如好塞堰基囁噴嘶嘯嘆喚啼哭咳咲呻呟吹向吐叩厭卷動効劈割剥利働傾俯佩付乾] CK_VERB5KA　(&__KA5 / NH)
+HVERB5KAc = [わゆやめむまふひぬどづつだたせすさこきかおういあ] CK_VERB5KA 
+// ×な 除外 受けないため
+VERB5SAc = [齎黙騙験馴顕題鞣面零離隠際降附関閉鎖醸醒醂配還遺遷適達過逸通透逃返辞躱足越超起赦賺賭質費貸貶議諭課誑話試評証訳許記託解覚覆要表蒸著落萌荒興致臥腐脱脅肥聞耕翻翳罰縅約糾糺窶穢移称秘科祝示直発癒略画申産現犯片燻燃熾熱熨熟為点灯濾濁潰潤漉湿渡減済涙消浸流注治没決汚比毀殺残死正止標果来期服有更曝暮暈晒映施敵放擬擁撮撫推接探排捺捜挿指押托戻成慣愛思志徹復律廻延座干帰差崩属屈尽射対寫察宿害孵娶威奏失外壊増塾堕坐均在圧回囃嚇喫唆呈吊合召反卸即印博化剥則刺制利出処冷冠写冒兆催倒促侵余伸会伏任仮付介交乾乱下] CK_VERB5SA (&__SA5 / NH)
+HVERB5SAc = [よもめむまほへぶふひなだたじしざさこけぎかお]　CK_VERB5SA NH // 
+// 見つけたすべて => 見つけ たす
+
+VERB5TAc = [過起託討裁落育絶経立穿発激滾満毀断放擲撃持打截待建峙射勝分克充保佇伐] CK_VERB5TA　(&__TA5 / NH)
+HVERB5TAc = [もみまぶたかう] CK_VERB5TA　NH
+VERB5NAc = [死往] CK_VERB5NA　(&__NA5 / NH)
 HVERB5NAc = [しい] CK_VERB5NA
-VERB5MAc = [飲食頼青霞障阻鋏鉗酌進込辞軋踏践貶讀謹諌読詰詠蝕蕾蔑萎萌荒苛臨膿育羨績縮緩編絡組笑竦窪窄積睨睦眩盗白痛病疎畳産生燐熟煌澱澄潤潜滲温済混淀涼泥沮沈沁汲求歪歩止棲染望暗攫撮撓摘揉掴挾挟挑拝拒抓憾憎慰慎悼悴悩恵息恨恤恙怯怨忌弾弛巧嵩屈富孕嫉妬好夾囲因嚼噤噛嗜営啄咬和呑含否包勇励力剪刻凹凍凋凄儚僻傷倦住佇休企ゑ] CK_VERB5MA
+VERB5MAc = [飲食頼青霞障阻鋏鉗酌進込辞軋踏践貶讀謹諌読詰詠蝕蕾蔑萎萌荒苛臨膿育羨績縮緩編絡組笑竦窪窄積睨睦眩盗白痛病疎畳産生燐熟煌澱澄潤潜滲温済混淀涼泥沮沈沁汲求歪歩止棲染望暗攫撮撓摘揉掴挾挟挑拝拒抓憾憎慰慎悼悴悩恵息恨恤恙怯怨忌弾弛巧嵩屈富孕嫉妬好夾囲因嚼噤噛嗜営啄咬和呑含否包勇励力剪刻凹凍凋凄儚僻傷倦住佇休企ゑ] CK_VERB5MA (&__MA5 / NH)
 HVERB5MAc = [よふひつそすしこくえういあ] CK_VERB5MA // やはのとかも
-VERB5RAc = [齧黙鳴驕騰騙駈駆馨香飾頼頻預震集隣隠障陰陥限降阿錬鈍釣量重配還遺選遮遣遡遜過逸造通透送退迸迫返迂辿辷輝載軋躍躄蹶蹴蹲踞踊跼跨足起走贈賣賜貼貪象護譲譏謝謙謗謀諮論誹誤語誇詰詣訝訛計触解覚覆要被蟠蘇薫蒙葬茂苅航舐興至腐肥肖聰耽翻翳翔罹罷罵繰織繋繁縢縛縋縁練綴継絞終細糶粘籠篭競穫稔移祷祭祟祈祀磨破知瞑睡眠直盛盗登疑留由甦生理猛狩燻熾熱熬煽照煙煎煉焦焙烟為点炙炒灯濁潜漲漏漁滾滴滞滑溯溜湿測渡減渋浸洩法泊治決氷毟殺殴残止樵梳梱染架有替曲曇映昇昂旧断斬料散放擽擦操擂撲撮撚撓摺摩摂搾揺握揚探採掠掛掘捻捲捩捗捕振挙括拠拘拗抛折抓抉承戻成懸憤慮悟悖怠怒徹彫彩当張弱弄廻廃座帰巡嵌屠居尖寄宿宣実守孵嬲娶奢契奉太変売填塗堪執埋坐在図困因回囀嘲喋啜唸哮呷呵吊吃司叱古叢取反参去募勝劣創割剰削則剃刷刳到判刈切分凝凍写入光優偽停偏借係便侮依侍作余伐仰代仕亙亘乗中与下上ス] CK_VERB5RA
+VERB5RAc = [齧黙鳴驕騰騙駈駆馨香飾頼頻預震集隣隠障陰陥限降阿錬鈍釣量重配還遺選遮遣遡遜過逸造通透送退迸迫返迂辿辷輝載軋躍躄蹶蹴蹲踞踊跼跨足起走贈賣賜貼貪象護譲譏謝謙謗謀諮論誹誤語誇詰詣訝訛計触解覚覆要被蟠蘇薫蒙葬茂苅航舐興至腐肥肖聰耽翻翳翔罹罷罵繰織繋繁縢縛縋縁練綴継絞終細糶粘籠篭競穫稔移祷祭祟祈祀磨破知瞑睡眠直盛盗登疑留由甦生理猛狩燻熾熱熬煽照煙煎煉焦焙烟為点炙炒灯濁潜漲漏漁滾滴滞滑溯溜湿測渡減渋浸洩法泊治決氷毟殺殴残止樵梳梱染架有替曲曇映昇昂旧断斬料散放擽擦操擂撲撮撚撓摺摩摂搾揺握揚探採掠掛掘捻捲捩捗捕振挙括拠拘拗抛折抓抉承戻成懸憤慮悟悖怠怒徹彫彩当張弱弄廻廃座帰巡嵌屠居尖寄宿宣実守孵嬲娶奢契奉太変売填塗堪執埋坐在図困因回囀嘲喋啜唸哮呷呵吊吃司叱古叢取反参去募勝劣創割剰削則剃刷刳到判刈切分凝凍写入光優偽停偏借係便侮依侍作余伐仰代仕亙亘乗中与下上ス] CK_VERB5RA (&__RA5 / NH)
 HVERB5RAc = [わよゆやもぼほへぶふひばはのねぬなどとてつちたそせずしさこけきがかおえうい] CK_VERB5RA　// あ
-VERB5WAc = [養飼食願震雇集闘鎧酔遵遭適遣違遇逢通這逐追迷蹲贖購賜賄買貰負謳謡謂諾請諂調誘誓詠詛訪言覆襲補装被衒行蔽舞臭能習纏繕縫綯給結紛糾粧篩笑競窺祝祓疑狙狂犒煩濯潤漂渫添浚洗沿歌構杓曰斎整敬救支攫撓揮揃掬拾拭拐担抗扱払戦憩憂慕想惑患恋思従弔弄庇希宣嫌奮奪失報培囲喰喪問商唱唄呪吸向合叶厭占匿匂労冀償傭倣候使伺伴伝会交云争乞] CK_VERB5WA
-HVERB5WAc = [よゆまふぬなそすこくかおいあ] CK_VERB5WA // 除外: はと
-VERB5GAc = [鬻鬱騒雪防跨貢訃薙脱繋継紡稼禦祈磨研矧瞬煽炊濯漱漕游泳注殺次揺接拉担扱扇戦急寿寛嫁塞嗣嗅喘和告剥削凪凌傾仰] CK_VERB5GA
+VERB5WAc = [養飼食願震雇集闘鎧酔遵遭適遣違遇逢通這逐追迷蹲贖購賜賄買貰負謳謡謂諾請諂調誘誓詠詛訪言覆襲補装被衒行蔽舞臭能習纏繕縫綯給結紛糾粧篩笑競窺祝祓疑狙狂犒煩濯潤漂渫添浚洗沿歌構杓曰斎整敬救支攫撓揮揃掬拾拭拐担抗扱払戦憩憂慕想惑患恋思従弔弄庇希宣嫌奮奪失報培囲喰喪問商唱唄呪吸向合叶厭占匿匂労冀償傭倣候使伺伴伝会交云争乞] CK_VERB5WA (&__WA5 / NH)
+HVERB5WAc = [よゆまふぬそすこくかおいあ] CK_VERB5WA // 除外: はと
+// ×な 除外 受けないため
+VERB5GAc = [鬻鬱騒雪防跨貢訃薙脱繋継紡稼禦祈磨研矧瞬煽炊濯漱漕游泳注殺次揺接拉担扱扇戦急寿寛嫁塞嗣嗅喘和告剥削凪凌傾仰] CK_VERB5GA (&__GA5 / NH)
 HVERB5GAc = [もへはねぬなとつそこか] CK_VERB5GA
-VERB5BAc = [飛陳選運遊転跳賜貴荒翔綻給結玩滅浮歓撰掬択慶悦忍弄尊學学噎喜喚咽呼叫及列偲亡並] CK_VERB5BA
+VERB5BAc = [飛陳選運遊転跳賜貴荒翔綻給結玩滅浮歓撰掬択慶悦忍弄尊學学噎喜喚咽呼叫及列偲亡並] CK_VERB5BA (&__BA5 / NH)
 HVERB5BAc = [よと] CK_VERB5BA
 
 /* Pattern */
@@ -104,15 +108,15 @@ VERB1   = (VERB1w / VERB1c  )
 
 VERB = 
     / VERB1w
+    / VERB5RA
     / VERB5KA
     / VERB5SA
     / VERB5TA
-    / VERB5NA
     / VERB5MA
-    / VERB5RA
     / VERB5WA
     / VERB5GA
     / VERB5BA
+    / VERB5NA
 
 PATVERB = 
     / VERB1w 　// ひらがなで終わる
@@ -120,13 +124,26 @@ PATVERB =
     / VERB5KA 'き'
     / VERB5SA 'し' ![たてまなよず]
     / VERB5TA 'ち'
-    / VERB5NA 'に'
     / VERB5MA 'み'
     / VERB5WA 'い'
     / VERB5GA 'ぎ'
     / VERB5BA 'び'
+    / VERB5NA 'に'
 
-CK_VERB5KA = &[か-こい]
+VERBc = 
+    / VERB1c
+    / VERB5RAc
+    / VERB5KAc
+    / VERB5SAc
+    / VERB5TAc
+    / VERB5MAc
+    / VERB5WAc
+    / VERB5GAc
+    / VERB5BAc
+    / VERB5NAc
+
+
+CK_VERB5KA = &[か-こい]　
 CK_VERB5SA = !'せん' &[さ-そ]   // できません、「ありま」せん　のため
 CK_VERB5TA = &[た-とっ]
 CK_VERB5NA = &[な-のん]
@@ -213,7 +230,7 @@ AdjectiveH1 =
 // 形容詞: 美し 大き
 
 DictAdj = { 
-    ADJ / KANJI ADJ / KANJI KANJI ADJ
+    ADJ
     #Adj 
 }
 
@@ -223,18 +240,17 @@ PatAdj = {
     #PAdj 
 }
 
-ADJ_CHECK = [さかくけいめ] / 'そう' / '過ぎ' / 'すぎ'
+ADJ_CHECK = [さげかくけいめ] / 'そう' / '過ぎ' / 'すぎ'
 
 _Adjective =
     / {^ {'過ぎ' / 'すぎ'} #Too } _Verb1
-    / {^ {'さ' !'れ' } #Noun } _NHNoun?
+    / {^ {'さ' !'れ' / 'げ' !__V1 } #Noun } _NHNoun?
     / {^ {'そう'} #Like } _NHNoun? 
     / {^ {'め'} #More } _Verb1
     / _MoodNA 
 
 GoodAdj = { 'よ' #Good }
 Not = { 'な' #Not }
-
 
 // 動詞
 
@@ -243,21 +259,24 @@ VerbChunk =
     / PatVerb / DictVerb 
 
 // 組み込み 組込み　
-// 役に立つ
-PatVerb = { PATVERB / KANJI } _PatVerb
+// 役に立つ 呼びだす NH HVERB5KAc
+// 示 します
+PatVerb = { PATVERB / !VERBc KANJI } _PatVerb
 
 _PatVerb = 
     / {^ { VERB1w }   #PVerb1 }  _Verb1
-    / {^ { VERB5RA } #PVerbRA5 } _VerbRA5
-    / {^ { VERB5KA } #PVerbKA5 } _VerbKA5
-    / {^ { VERB5SA } #PVerbSA5 } (_NounVerb / _VerbSA5)
-    / {^ { VERB5TA } #PVerbTA5 } _VerbTA5
-    / {^ { VERB5NA } #PVerbNA5 } _VerbNA5
-    / {^ { VERB5MA } #PVerbMA5 } _VerbMA5
-    / {^ { VERB5WA } #PVerbWA5 } _VerbWA5
-    / {^ { VERB5GA } #PVerbGA5 } _VerbGA5
-    / {^ { VERB5BA } #PVerbBA5 } _VerbBA5
-    / {^ { VERB1c }  #PVerb1 }  _Verb1
+    / {^ { VERB5RA / NH HVERB5RAc } #PVerbRA5 } _VerbRA5
+    / {^ { VERB5KA / NH HVERB5KAc } #PVerbKA5 } _VerbKA5
+    / {^ { VERB5SA / ![ま] NH HVERB5SAc } #PVerbSA5 } (_NHNounVerb / _VerbSA5)
+    / {^ { VERB5TA / NH HVERB5TAc } #PVerbTA5 } _VerbTA5
+    / {^ { VERB5NA / NH HVERB5NAc } #PVerbNA5 } _VerbNA5
+    / {^ { VERB5MA / NH HVERB5MAc } #PVerbMA5 } _VerbMA5
+    / {^ { VERB5WA / NH HVERB5WAc } #PVerbWA5 } _VerbWA5
+    / {^ { VERB5GA / NH HVERB5GAc } #PVerbGA5 } _VerbGA5
+    / {^ { VERB5BA / NH HVERB5BAc } #PVerbBA5 } _VerbBA5
+    / {^ { VERB1c  }  #PVerb1 }  _Verb1
+
+// 考えましょう => 考えます 
 
 DictVerb = 
     / { VERB1w  #Verb1 }   _Verb1
@@ -316,9 +335,9 @@ Do = // する
 _NHNounVerb = &[すずしじさせで] NH _NounVerb
 
 _NounVerb = // 例. 行動する 論じる
-    / {^ {[すず] 'る'} #Do } _VerbU
+    / {^ {'する'} #Do } _VerbU
     / {^ {[すず]} #Do } ('れ' _VerbE / _Should) 
-    / {^ {[しじ]} #Do } (_VerbA / 'よ' _VerbO / _VerbIX / _VerbI / !'か' )
+    / {^ {[しじ]} #Do } (_VerbA / 'よ' _VerbO / _VerbIX / _VerbI / !'か' _NHNoun?)
     / {^ {'され'} #Been } _Verb1 
     / {^ {'させ'} #Make } _Verb1
     / {^ {'せよ'} #Command } _Base?
@@ -334,6 +353,8 @@ _VerbKA5 = // 書
     / {^ {'け'} #Verb } _VerbE
     / {^ {'こ'} #Verb } _VerbO
 
+__KA5 = 'か' __A / 'きま' __MA / 'い' __IX / 'けば' / 'こう'   
+
 _VerbSA5 = // 探 出
     / {^ {'さ'} #Verb } _VerbA  // ない
     / {^ {'し'} #Verb } _VerbIX // て
@@ -342,6 +363,8 @@ _VerbSA5 = // 探 出
     / {^ {'す' 'る'?} #Verb } _VerbU  // 達すると
     / {^ {'せ'} #Verb } _VerbE  // ば
     / {^ {'そ'} #Verb } _VerbO  // う
+
+__SA5 = 'さ' __A / 'しま' __MA / 'し' __IX / 'する' / 'せば' / 'そう'  
 
 _VerbTA5 = // 勝
     / {^ {'た'} #Verb } _VerbA  // ない
@@ -352,6 +375,8 @@ _VerbTA5 = // 勝
     / {^ {'て'} #Verb } _VerbE  // ば
     / {^ {'と'} #Verb } _VerbO  // う
 
+__TA5 = 'た' __A / 'ちま' __MA / 'っ' __IX / 'てば' / 'とう'  
+
 _VerbNA5 = // 死
     / {^ {'な'} #Verb } _VerbA  // ない
     / {^ {'に'} #Verb } _VerbI // ながら
@@ -360,6 +385,8 @@ _VerbNA5 = // 死
     / {^ {'ぬ'} #Verb } _VerbU  // 
     / {^ {'ね'} #Verb } _VerbE  // ば
     / {^ {'の'} #Verb } _VerbO  // う
+
+__NA5 = 'な' __A / 'にま' __MA / 'ん' __IDX / 'ねば' / 'のう'  
 
 _VerbMA5 = // 読
     / {^ {'ま'} #Verb } _VerbA  // ない
@@ -370,6 +397,8 @@ _VerbMA5 = // 読
     / {^ {'め'} #Verb } _VerbE  // ば
     / {^ {'も'} #Verb } _VerbO  // う
 
+__MA5 = 'ま' __A / 'みま' __MA / 'ん' __IDX / 'めば' / 'もう'  
+
 _VerbRA5 = // 切
     / {^ {'ら'} #Verb } _VerbA  // ない
     / {^ {'り'} #Verb } _VerbI  // ながら
@@ -378,6 +407,8 @@ _VerbRA5 = // 切
     / {^ {'る'} #Verb } _VerbU  // 
     / {^ {'れ'} #Verb } _VerbE  // ば
     / {^ {'ろ'} #Verb } _VerbO  // う
+
+__RA5 = 'ら' __A  / 'りま' __MA / 'っ' __IX / 'れば' / 'ろう'  
 
 _VerbWA5 = // 笑
     / {^ {'わ'} #Verb } _VerbA  // ない
@@ -388,6 +419,8 @@ _VerbWA5 = // 笑
     / {^ {'え'} #Verb } _VerbE  // ば
     / {^ {'お'} #Verb } _VerbO  // う
 
+__WA5 = 'わ' __A / 'いま' __MA / 'っ' __IX / 'えば' / 'おう'  
+
 _VerbGA5 = // 防
     / {^ {'が'} #Verb } _VerbA  // ない
     / {^ {'ぎ'} #Verb } _VerbI  // ながら
@@ -396,6 +429,8 @@ _VerbGA5 = // 防
     / {^ {'ぐ'} #Verb } _VerbU  // 
     / {^ {'げ'} #Verb } _VerbE  // ば
     / {^ {'ご'} #Verb } _VerbO  // う
+
+__GA5 = 'が' __A / 'ぎま' __MA / 'い' __IDX  / 'げば' / 'ごう'  
 
 _VerbBA5 = // 遊
     / {^ {'ば'} #Verb } _VerbA  // ない
@@ -406,12 +441,7 @@ _VerbBA5 = // 遊
     / {^ {'べ'} #Verb } _VerbE  // ば
     / {^ {'ぼ'} #Verb } _VerbO  // う
 
-// 遊び＋に続く名詞
-VPATNOUN = 
-    / KATA+
-    / KANJI+
-    / NOUN 
-    / NOUN2
+__BA5 = 'ば' __A / 'びま' __MA / 'ん' __IDX / 'べば' / 'ぼう' 
 
 // 「それる」は除外
 
@@ -425,6 +455,8 @@ _Verb1 = // 過ぎ　述べ　視　でき
     / _VerbI　// て
     / {^ #Noun } _NHNoun?
 
+__V1 = 'る' / 'ま' __MA / 'れば' / 'られ' __V1 / 'よう' / __A / __IX  
+
 //あ行
 
 _VerbA = // 書か+ない   探さ+ない
@@ -432,6 +464,9 @@ _VerbA = // 書か+ない   探さ+ない
     / {^ {'ず' #Not} #Noun } _NHNoun?
     / {^ {'さ'? 'せ' 'られ'?} #Make } _Verb1
     / {^ {'れ'} #Been } _Verb1 
+
+CK_VA = [なずさせられ]
+__A = 'な' __NA / 'ず' / 'さ'? 'せ' 'られ'? __V1? / 'れ' __V1? 
 
 _VerbIX = // 書い+て   探し+て　
     / {^ {'た'} NH #WantTo } _MoodNA   // 特例. 記録したい
@@ -441,12 +476,16 @@ _VerbIX = // 書い+て   探し+て　
     / {^ {'て'} #Noun } _NHNoun
     / {^ {'て'} IGNORED? #And } _TryMood?
 
+__IX = [たて]  
+
 _VerbIXD = // 遊んだ   遊んで
     / {^ {'だ'} #Past } _Past?
     / {^ {'でから'} #After } _NHNoun?
     / {^ {'で' (&'も' NH .)} #EvenIf }
     / {^ {'で'} #Noun } _NHNoun
     / {^ {'で'} IGNORED? #And } _TryMood?
+
+__IDX = [だで]
 
 _VerbI = // 書き+つつ  探し+つつ　
     / &'ま' _Polite
@@ -498,11 +537,10 @@ _BaseImpl = // する+ した+
     / {^ {'の'} #That } _NHNoun?
 
 _Past = // した
-    / {^ {'り'} #Noun } _NHNoun
+    / {^ {'り'} #Noun } (_NHNounVerb / _NHNoun)
     / {^ {'り' 'し'? } #Then }
     / {^ {'な'? 'ら' 'ば'?} #If } 
     / _Base
-
 
 _May =
     {^ 'かも' [知し] 'れ' ('ない' / 'ません') #May } _Base?
@@ -537,13 +575,17 @@ _MoodNA = //な
     / {^ {'かった'} 'です'? #Past } _Past?
     / {^ {'さ'} #Noun } _NHNoun?
 
+__NA = [いく] / 'かった' / 'ければ'
+
 _Polite =
     / {^ {('ます' / 'ましょう')} #Base } _Base?
-    / {^ {'ません' 'でした'?} #Not } _Base?
+    / {^ {'ません'} #Not } _Base?
     / {^ {'ましたら'} #If }
     / {^ {'ました'} #Past } _Past?
     / {^ {'ましても'} #EvenIf }
     / {^ {'まして'} #And }
+
+__MA = 'す' / 'した' / 'して' / 'しょう' / 'せん' 
 
 _CanMood = // でき+　　られ+
     / &'ま' _Polite
@@ -562,12 +604,14 @@ MOOD1 = [まなるたれてず]
 // 補助動詞
 _TryMood = NH _TryMoodImpl
 _TryMoodImpl = 
-    / {^ {'み'} #TryTo } _Verb1 // 笑ってみる
-    / {^ {'い'} #Going } _VerbKA5
+    / {^ {'み'} #Try } _Verb1 // 笑ってみる
+    / {^ {'い'} #Going } _VerbKA5  // 
     / {^ {'い'} #Now } _Verb1    // 笑っている, 増加していく
+    / {^ {'くれ'} #Given } _Verb1    // 笑ってくれる
+    / {^ {'お'} #Done } _VerbKA5    // 笑っておく
     / _Exist                 // 笑ってある 
     / Come                  // 笑ってくる
-    / _Verb1
+    / {^ &HIRA #Now } _Verb1    // 笑ってる (口語)
 
 // 名詞
 // 平仮名が含まれない字句は外来語（名詞）とする
@@ -607,40 +651,27 @@ DEFNOUN = (!'」' .)+
 NewNoun = @in('定義語')
 
 PatNoun = {
-    PATNOUN3 NSUFFIX?
-    / 'お' PATNOUN3 NSUFFIX?
+    PATNOUN NSUFFIX?
+    / 'お' PATNOUN NSUFFIX?
     #PNoun
-} (&'ま' {^ #Verb } _Polite )?    // 必要あり+ません
+} 
 
-PATNOUN3 =
+example Sentence 必要ありません
+
+PATNOUN =
     / KANJI (!STOPCHAR KANJI)+
     / KATA+ (!STOPCHAR KANJI)*
 
-STOPCHAR = &KANJI (VERB/ADJ/ADWORD) 
-
-example PATNOUN3 メソッド
-
-PatNounC = {
-    NONHIRA NSUFFIX?
-    #PNoun
-} _NHNoun?
-
-
-PATNOUN = 
-    / PATVERB NONHIRA+ NSUFFIX?
-    / NONHIRA ( HIRAPAT / NONHIRA+)? 
-
-PATNOUN2 = 
-    / PATVERB NONHIRA+ NSUFFIX?
-    / NONHIRA HIRAPAT
-    / NONHIRA NONHIRA ( HIRAPAT / NONHIRA+)? 
-
-
-// ![たてまなよ] 到達しよう　到達しない 到達します等を弾く
-
-HIRAPAT = PATVERB / NONHIRA HIRAPAT
+STOPCHAR = &KANJI (VERB/ADJ)  // ADWORD がくるのは除外
+// 減少しません  減 少し ません
 
 NSUFFIX = 'どおし' / 'どうし' / 'くらい' / 'ほど' / 'さん' / 'ちゃん' / 'ら'
+
+Character = 
+    / { KANJI ([ろ] 'し' / 'し') #PAdj } _Adjective
+    / { KANJI [えきぎけげせじてめびべりれね] #PVerb1 } _Verb1
+    / { KANJI ('やか' / NSUFFIX?) #PNoun } _NHNoun?
+
 
 EVEN = 'さえ' / 'すら'
 
