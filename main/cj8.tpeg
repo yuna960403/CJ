@@ -276,7 +276,7 @@ _PatVerb =
     / {^ { VERB5BA / NH HVERB5BAc } #PVerbBA5 } _VerbBA5
     / {^ { VERB1c  }  #PVerb1 }  _Verb1
 
-// 考えましょう => 考えます 
+// 考えましょう => 考え + ます 
 
 DictVerb = 
     / { VERB1w  #Verb1 }   _Verb1
