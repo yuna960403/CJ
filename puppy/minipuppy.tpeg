@@ -1,0 +1,65 @@
+/* Code Layout */
+
+EOF          = !.
+LF           = '\n' / EOF
+S            = [ \t\u200B\v\r　]
+
+_            = ( S / BLOCKCOMMENT / LINECOMMENT )*
+__           = ( S / '\n' / BLOCKCOMMENT / LINECOMMENT )*
+SPC          = ( S / BLOCKCOMMENT / LINECOMMENT )+
+
+BLOCKCOMMENT = '/*' ( !'*/' . )* '*/'
+LINECOMMENT  = [#＃] ( !LF . )*
+
+EOL          = _ LF (_ LF)*
+INDENT       = '\n' [ \t　]+
+
+Name = {[A-Za-z]+ #Name} _
+Int = {[0 - 9]+ #Int} _
+Expression = Int / Name
+
+example Expression 123
+example Expression Abc
+
+Assignment　= {
+    Name
+    '=' _
+    Expression
+    #VarDecl
+}
+
+Assignment　= {
+    Name
+    'に'
+    Expression
+    ’を代入する’
+}
+
+Assignment　= {
+    Name
+    'を'
+    Expression
+    ’とする’
+}
+
+Assignment　= {
+    Expression
+    ’を’
+    Varb
+    #App
+}
+
+VERB = (KATA+ / KANJI+) ‘する’?
+Verb = { VERB #Verb } 
+
+HIRA = [あ-ん]
+KATA = [ア-ケ]
+KANJI = []
+
+example Statement x = 1
+example Statement xに1を代入する
+example Statement xを1とする
+example Statement xを表示する
+example Statement xを表示
+
+#シンタックスエラーが起きる（5/20のsスクショを見る）
